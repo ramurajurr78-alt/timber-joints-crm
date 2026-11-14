@@ -15,7 +15,7 @@
 <dialog id="dlg"><form id="form" class="modal"><h2>New sofa order</h2><div class="formgrid">
 <label>Customer name<input name="customer" required></label><label>Mobile number<input name="phone" inputmode="tel" required></label><label class="wide">Address<input name="address"></label><label>Sofa / model<input name="sofa" required placeholder="3-seater, L-shape..."></label><label>Fabric / colour<input name="fabric"></label><label>Order value (₹)<input name="total" type="number" min="0" required></label><label>Advance paid (₹)<input name="advance" type="number" min="0" value="0"></label><label class="wide">Stage<select name="status"><option>Enquiry</option><option>Confirmed</option><option>Frame</option><option>Foam</option><option>Stitching</option><option>Upholstery</option><option>Ready for delivery</option><option>Delivered</option></select></label></div><div class="modalfoot"><button type="button" class="btn secondary" id="cancel">Cancel</button><button class="btn">Save order</button></div></form></dialog>
 <script>
-const SUPABASE_URL='https://hkzrhmdfzfpvkltpmfhy.supabase.co';
+const SUPABASE_URL='https://nkzrnmdfzfpvkltpmfhy.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_q9DEzqd3H4XJCfdYpacjFg_nCxKLnxY';
 const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
 let orders=[],user=null;
