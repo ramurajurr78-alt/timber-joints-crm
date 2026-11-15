@@ -18,7 +18,9 @@
 <script>
 const SUPABASE_URL='https://nkzrnmdfzfpvkltpmfhy.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY='sb_publishable_q9DEzqd3H4XJCfdYpacjFg_nCxKLnxY';
-const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+const db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY,{auth:{flowType:'implicit',autoRefreshToken:true,persistSession:true,detectSessionInUrl:true}});
+const callbackParams=new URLSearchParams(location.hash.startsWith('#')?location.hash.slice(1):'');
+if(callbackParams.has('error_description')||callbackParams.has('error')){$('authmsg').textContent='Sign-in link error: '+(callbackParams.get('error_description')||callbackParams.get('error')).replace(/\\+/g,' ');}
 let orders=[],quotations=[],user=null;
 const stages=['Enquiry','Confirmed','Frame','Foam','Stitching','Upholstery','Ready for delivery','Delivered'];
 const money=n=>new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:0}).format(Number(n)||0);
@@ -45,5 +47,5 @@ $('quotesbody').addEventListener('click',async e=>{const b=e.target.closest('but
 
 $('form').onsubmit=async e=>{e.preventDefault();let d=Object.fromEntries(new FormData(e.currentTarget));d.total=Number(d.total);d.advance=Number(d.advance);if(d.advance>d.total){alert('Advance cannot exceed order value');return}d.user_id=user.id;d.order_number='TJ-'+Date.now().toString().slice(-6);const {error}=await db.from('orders').insert(d);if(error){alert('Save failed: '+error.message);return}$('form').reset();$('dlg').close();await loadOrders()};
 $('export').onclick=()=>{let keys=['order_number','customer','phone','address','sofa','fabric','status','total','advance'],csv=[keys.join(','),...orders.map(o=>keys.map(k=>'"'+String(o[k]??'').replace(/"/g,'""')+'"').join(','))].join('\n'),a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='timber-joints-orders.csv';a.click();URL.revokeObjectURL(a.href)};
-db.auth.onAuthStateChange((_event,session)=>{setSession(session)});db.auth.getSession().then(({data})=>setSession(data.session));
+db.auth.onAuthStateChange((_event,session)=>{setSession(session)});db.auth.getSession().then(({data,error})=>{if(error)$('authmsg').textContent='Session error: '+error.message;setSession(data?.session||null);if(!data?.session&&!callbackParams.has('error')&&!callbackParams.has('error_description')&&location.hash.includes('access_token'))$('authmsg').textContent='Authentication response received, but no session was saved. Please request a fresh link.'});
 </script></body></html>
